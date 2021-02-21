@@ -1,5 +1,6 @@
 using CleverBitCodingTask.Data;
 using CleverBitCodingTask.Models;
+using CleverBitCodingTask.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,6 +48,9 @@ namespace CleverBitCodingTask
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
+            services.AddTransient<IGameMatchService, GameMatchService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

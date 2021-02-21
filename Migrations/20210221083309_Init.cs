@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CleverBitCodingTask.Data.Migrations
+namespace CleverBitCodingTask.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -61,6 +61,20 @@ namespace CleverBitCodingTask.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeviceCodes", x => x.UserCode);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GameMatches",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExpiresAt = table.Column<DateTime>(nullable: false),
+                    WinnerId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameMatches", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,6 +200,30 @@ namespace CleverBitCodingTask.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "GameMatchParticipants",
+                columns: table => new
+                {
+                    GameMatchId = table.Column<int>(nullable: false),
+                    ParticipantId = table.Column<string>(nullable: false),
+                    ParticipantScore = table.Column<decimal>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameMatchParticipants", x => new { x.GameMatchId, x.ParticipantId });
+                    table.ForeignKey(
+                        name: "FK_GameMatchParticipants_GameMatches_GameMatchId",
+                        column: x => x.GameMatchId,
+                        principalTable: "GameMatches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GameMatchParticipants_AspNetUsers_ParticipantId",
+                        column: x => x.ParticipantId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -237,6 +275,18 @@ namespace CleverBitCodingTask.Data.Migrations
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GameMatchParticipants_GameMatchId",
+                table: "GameMatchParticipants",
+                column: "GameMatchId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameMatchParticipants_ParticipantId",
+                table: "GameMatchParticipants",
+                column: "ParticipantId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_Expiration",
                 table: "PersistedGrants",
                 column: "Expiration");
@@ -268,10 +318,16 @@ namespace CleverBitCodingTask.Data.Migrations
                 name: "DeviceCodes");
 
             migrationBuilder.DropTable(
+                name: "GameMatchParticipants");
+
+            migrationBuilder.DropTable(
                 name: "PersistedGrants");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "GameMatches");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
